@@ -1,0 +1,3 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {Campaigns} from './core.ts';
+test('tenant isolation and permanent suppression across re-import',()=>{const c=new Campaigns();c.import('a',['A@example.com','b@example.com']);c.import('b',['a@example.com']);c.suppress('a','a@example.com','unsubscribe');c.import('a',['a@example.com']);assert.deepEqual(c.batch('a',10).map(x=>x.email),['b@example.com']);assert.equal(c.batch('b',10).length,1);c.suppress('a','b@example.com','bounce');assert.equal(c.batch('a',10).length,0)});
+test('bounds and validation',()=>{const c=new Campaigns();assert.throws(()=>c.import('a',['bad']));assert.throws(()=>c.batch('a',0))});
